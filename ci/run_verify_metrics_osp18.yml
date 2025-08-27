@@ -23,6 +23,7 @@
           oc exec openstackclient -- python3 -m ensurepip --upgrade
           oc exec openstackclient -- python3 -m pip install --upgrade aodhclient
           oc exec openstackclient -- python3 -m pip install --upgrade python-observabilityclient
+          oc exec openstackclient -- python3 -m pip install --upgrade prometheus-client
       when: patch_observabilityclient | default(false) | bool
       tags:
         - setup
