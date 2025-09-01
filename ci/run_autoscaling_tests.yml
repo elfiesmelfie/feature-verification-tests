@@ -44,6 +44,7 @@
   tasks:
     - block:
         - name: Include vars from the extra_vars files
+          when: cifmw_basedir is defined
           ansible.builtin.include_vars:
             dir: "{{ cifmw_basedir }}/artifacts/parameters"
 
