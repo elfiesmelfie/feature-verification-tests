@@ -19,7 +19,9 @@ spec:
   # need to check where the collection ends up living...
   # or indeed, just the ansible playbook.
   # /var/lib/ansible/ansible/ci/"
+  # install_yamls_dir needs to be updated later, maybe removed... the required dirs should be mounted into the pods
   ansibleVarFiles: |
+    install_yamls_dir: "{{ ansible_env.HOME }}/install_yamls"
     cifmw_openshift_kubeconfig: ~/.kube.config
     cifmw_path: "{{ ansible_env.PATH }}:/var/lib/ansible/bin"
     cifmw_openshift_api: api.crc.testing:6443

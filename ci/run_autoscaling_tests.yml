@@ -48,8 +48,17 @@
           ansible.builtin.include_vars:
             dir: "{{ cifmw_basedir }}/artifacts/parameters"
 
+        - when: install_yamls_dir is not defined
+          set_fact:
+            install_yamls_dir: '{{ ansible_env.HOME }}/{{ zuul.projects["github.com/openstack-k8s-operators/install_yamls"].src_dir }}/devsetup'
+
+        - when: zuul is not defined
+          shell:
+            cmd: |
+              git clone http://github.com/openstack-k8s-operators/install_yamls
+            chdir: "{{ ansible_env.HOME }}/"
         - community.general.make:
-            chdir: '{{ ansible_env.HOME }}/{{ zuul.projects["github.com/openstack-k8s-operators/install_yamls"].src_dir }}/devsetup'
+            chdir: '{{ install_yamls_dir }}/devsetup'
             target: edpm_deploy_instance
           tags:
             - setup
