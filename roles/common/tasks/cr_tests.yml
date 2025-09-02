@@ -1,9 +1,15 @@
 ---
+- set_fact:
+    namespace: "{{ item.namespace | default('') }}"
+
+- set_fact:
+    namespace_string: "{{ '-n ' + namespace  if namespace | length > 0 else '' }}"
+
 - name: |
     TEST Verify that the {{ item.kind }} {{ item.name }} CR exists
   ansible.builtin.command:
     cmd: |
-      oc get {{ item.kind }} {{ item.name }}
+      oc get {{ namespace_string }} {{ item.kind }} {{ item.name }}
   register: result
   changed_when: false
   failed_when:
@@ -12,7 +18,7 @@
 - name: Verify that a CR is ready
   ansible.builtin.command:
     cmd: |
-      oc get {{ item.kind }} {{ item.name }} -o jsonpath='{.status.conditions[?(@.type=="{{ item.condition_type }}")].status}{"\n"}'
+      oc get {{ namespace_string }} {{ item.kind }} {{ item.name }} -o jsonpath='{.status.conditions[?(@.type=="{{ item.condition_type }}")].status}{"\n"}'
   register: result
   changed_when: false
   failed_when:
