@@ -28,6 +28,7 @@ spec:
     cifmw_openshift_password: '12345678'
     cifmw_openshift_user: kubeadmin
     openstack_cmd: "oc -n openstack rsh openstackclient openstack" 
+    patch_observabilityclient: true
     telemetry_verify_metrics_metric_sources_to_test:
       - ceilometer_compute_agent
       - ceilometer_central_agent
