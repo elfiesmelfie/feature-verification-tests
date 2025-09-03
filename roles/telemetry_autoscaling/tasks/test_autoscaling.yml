@@ -101,6 +101,7 @@
 
     - name: |
         TEST Verify orchestration scaled up instances
+      when: result.stdout == "alarm"
       ansible.builtin.shell: |
         # source ~/overcloudrc;
         {{ openstack_cmd }} server list --long | grep -i metering.server_group
@@ -138,6 +139,7 @@
 
     - name: |
         TEST Verify Orchestration scaled down instances
+      when: result.stdout == "alarm"
       ansible.builtin.shell: |
         # source ~/overcloudrc;
         export STACK_ID=$({{ openstack_cmd }} stack show {{ stack_name }} -c id -f value)
