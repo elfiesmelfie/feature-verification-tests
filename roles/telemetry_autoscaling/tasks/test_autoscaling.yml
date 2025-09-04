@@ -28,22 +28,22 @@
   register: instance_count1
   failed_when: instance_count1.stdout_lines | length != 1
 
-- shell: |
-    cat {{ ansible_env.HOME }}/.ssh/known_hosts | grep "{{ item | trim }}"
-  with_items: "{{ vnf_instance_ip.stdout_lines }}"
-  ignore_errors: true
-
-- name: Remove the existing hostkey, if there is one for the target IP
-  ansible.builtin.lineinfile:
-    dest: '{{ ansible_env.HOME }}/.ssh/known_hosts'
-    state: absent
-    regexp: "{{ item | trim }}"
-  with_items: "{{ vnf_instance_ip.stdout_lines }}"
-
-- shell: |
-    cat {{ ansible_env.HOME }}/.ssh/known_hosts | grep "{{ item | trim }}"
-  with_items: "{{ vnf_instance_ip.stdout_lines }}"
-  ignore_errors: true
+    #- shell: |
+    #    cat {{ ansible_env.HOME }}/.ssh/known_hosts | grep "{{ item | trim }}"
+    #  with_items: "{{ vnf_instance_ip.stdout_lines }}"
+    #  ignore_errors: true
+    #
+    #- name: Remove the existing hostkey, if there is one for the target IP
+    #  ansible.builtin.lineinfile:
+    #    dest: '{{ ansible_env.HOME }}/.ssh/known_hosts'
+    #    state: absent
+    #    regexp: "{{ item | trim }}"
+    #  with_items: "{{ vnf_instance_ip.stdout_lines }}"
+    #
+    #- shell: |
+    #    cat {{ ansible_env.HOME }}/.ssh/known_hosts | grep "{{ item | trim }}"
+    #  with_items: "{{ vnf_instance_ip.stdout_lines }}"
+    #  ignore_errors: true
 
   # NOTE: Disabling strict host key checking so that ssh doesn't give an error
   # when the host key changes i.e. if a new VM has been assigned a
@@ -55,7 +55,7 @@
   # The key removal should move to some pre/pre-run stage.
 - name: Test automatic scaling up of instances
   ansible.builtin.shell: |
-    sshpass -p gocubsgo ssh -o StrictHostKeyChecking=False cirros@{{ item | trim }} "sudo yes > /dev/null &"
+    sshpass -p gocubsgo ssh -o StrictHostKeyChecking=no cirros@{{ item | trim }} "sudo yes > /dev/null &"
   register: busy_process
   with_items: "{{ vnf_instance_ip.stdout_lines }}"
 
