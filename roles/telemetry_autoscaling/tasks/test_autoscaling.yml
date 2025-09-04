@@ -59,6 +59,12 @@
   register: busy_process
   with_items: "{{ vnf_instance_ip.stdout_lines }}"
 
+
+- name: Check that the busy process is active
+  ansible.builtin.shell: |
+    sshpass -p gocubsgo ssh -o StrictHostKeyChecking=no cirros@{{ item | trim }} "sudo ps aux | grep yes"
+  with_items: "{{ vnf_instance_ip.stdout_lines }}"
+
 - name: Show ceilometer_cpu metrics from Prometheus
   when: metrics_backend == "prometheus"
   block:
@@ -114,10 +120,9 @@
       ansible.builtin.set_fact:
         scaling_up_success: "{{ instance_count2.stdout_lines | length == 3 | bool }}"
 
-
 - name: Stop the busy process
   ansible.builtin.shell: |
-    sshpass -p gocubsgo ssh cirros@{{ item | trim }} "sudo killall yes"
+    sshpass -p gocubsgo ssh cirros@{{ item | trim }} sudo killall yes
   register: kill_busy_process
   with_items: "{{ vnf_instance_ip.stdout_lines }}"
 
