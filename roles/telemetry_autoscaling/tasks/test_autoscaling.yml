@@ -137,7 +137,7 @@
 
 - name: Stop the busy process
   ansible.builtin.shell: |
-    sshpass -p gocubsgo ssh cirros@{{ item | trim }} sudo killall yes
+    sshpass -p gocubsgo ssh -o StrictHostKeyChecking=no cirros@{{ item | trim }} sudo killall yes
   register: kill_busy_process
   with_items: "{{ vnf_instance_ip.stdout_lines }}"
 
