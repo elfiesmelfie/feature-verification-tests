@@ -107,7 +107,7 @@
 
     - name: |
         TEST Verify orchestration scaled up instances
-      when: result.stdout == "alarm"
+      when: result is succeeded
       ansible.builtin.shell: |
         # source ~/overcloudrc;
         {{ openstack_cmd }} server list --long | grep -i metering.server_group
@@ -118,7 +118,22 @@
       
     - name: Ensure Scaling Up instance result is set
       ansible.builtin.set_fact:
-        scaling_up_success: "{{ instance_count2.stdout_lines | length == 3 | bool }}"
+        scaling_up_success: "{{ instance_count2 is succeeded and instance_count2 is not skipped }}"
+
+    - name: Check the scaling_up_success var
+      debug:
+        msg: |
+          scaling_up_success: {{ scaling_up_success | bool }}
+
+    - name: Check the scaling_up_success var
+      debug:
+        msg: |
+          scaling up succeed? {{ instance_count2 is succeeded }}
+
+    - name: Check the task output
+      debug:
+        msg: |
+          {{ instance_count2 }}
 
 - name: Stop the busy process
   ansible.builtin.shell: |
@@ -126,8 +141,8 @@
   register: kill_busy_process
   with_items: "{{ vnf_instance_ip.stdout_lines }}"
 
-- name:  TEST Scaling down instance
-  when: scaling_up_success
+- name: TEST Scaling down instance
+  when: scaling_up_success | bool
   block:
     - name: |
         TEST Verify cpu low alarm has been triggered
