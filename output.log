@@ -1,0 +1,62 @@
+fatal: [localhost]: FAILED! => {
+    "changed": true,
+    "cmd": "oc -n openstack rsh openstackclient openstack rating module list\nexport SERVICE_NAME=instance\nexport GROUP_NAME=instance_uptime_flavor_id\nexport FIELD_NAME=\"flavor_id\"\n\noc -n openstack rsh openstackclient openstack rating hashmap group create $GROUP_NAME\nexport GROUP_ID=$( oc -n openstack rsh openstackclient openstack rating hashmap group list -f value -c Name -c 'Group ID' | grep $GROUP_NAME| awk '{ print $2}')\n\noc -n openstack rsh openstackclient openstack rating hashmap service create $SERVICE_NAME\nexport SERVICE_ID=$(oc -n openstack rsh openstackclient openstack rating hashmap service list -f value -c Name -c 'Service ID' | grep $SERVICE_NAME | awk '{ print $2 }')\n\noc -n openstack rsh openstackclient openstack rating hashmap field create $SERVICE_ID $FIELD_NAME\nexport FLAVOR_FIELD_ID=$(oc -n openstack rsh openstackclient openstack rating hashmap field list $SERVICE_ID -f value -c Name -c 'Field ID' | grep $FIELD_NAME | awk '{ print $2}')\n\nexport FLAVOR_NAME=m1.small\nexport FLAVOR_ID=$(oc -n openstack rsh openstackclient openstack flavor list -f value -c Name -c ID | grep $FLAVOR_NAME | awk '{print $2}')\n\noc -n openstack rsh openstackclient openstack rating hashmap mapping create 0.01  --field-id $FLAVOR_FIELD_ID  --value $FLAVOR_ID  -g $GROUP_ID  -t flat\n",
+    "delta": "0:00:52.571455",
+    "end": "2025-10-14 12:48:41.560496",
+    "invocation": {
+        "module_args": {
+            "_raw_params": null,
+            "_uses_shell": true,
+            "argv": null,
+            "chdir": null,
+            "cmd": "oc -n openstack rsh openstackclient openstack rating module list\nexport SERVICE_NAME=instance\nexport GROUP_NAME=instance_uptime_flavor_id\nexport FIELD_NAME=\"flavor_id\"\n\noc -n openstack rsh openstackclient openstack rating hashmap group create $GROUP_NAME\nexport GROUP_ID=$( oc -n openstack rsh openstackclient openstack rating hashmap group list -f value -c Name -c 'Group ID' | grep $GROUP_NAME| awk '{ print $2}')\n\noc -n openstack rsh openstackclient openstack rating hashmap service create $SERVICE_NAME\nexport SERVICE_ID=$(oc -n openstack rsh openstackclient openstack rating hashmap service list -f value -c Name -c 'Service ID' | grep $SERVICE_NAME | awk '{ print $2 }')\n\noc -n openstack rsh openstackclient openstack rating hashmap field create $SERVICE_ID $FIELD_NAME\nexport FLAVOR_FIELD_ID=$(oc -n openstack rsh openstackclient openstack rating hashmap field list $SERVICE_ID -f value -c Name -c 'Field ID' | grep $FIELD_NAME | awk '{ print $2}')\n\nexport FLAVOR_NAME=m1.small\nexport FLAVOR_ID=$(oc -n openstack rsh openstackclient openstack flavor list -f value -c Name -c ID | grep $FLAVOR_NAME | awk '{print $2}')\n\noc -n openstack rsh openstackclient openstack rating hashmap mapping create 0.01  --field-id $FLAVOR_FIELD_ID  --value $FLAVOR_ID  -g $GROUP_ID  -t flat\n",
+            "creates": null,
+            "executable": null,
+            "expand_argument_vars": true,
+            "removes": null,
+            "stdin": null,
+            "stdin_add_newline": true,
+            "strip_empty_ends": true
+        }
+    },
+    "msg": "non-zero return code",
+    "rc": 2,
+    "start": "2025-10-14 12:47:48.989041",
+    "stderr": "{\"faultcode\": \"Client\", \"faultstring\": \"Group instance_uptime_flavor_id already exists (UUID: 9e25fd8b-49e7-402b-a521-5b605cb11ed0)\", \"debuginfo\": null} (HTTP 409)\ncommand terminated with exit code 1\n{\"faultcode\": \"Client\", \"faultstring\": \"Service instance already exists (UUID: 5dba5ebb-232e-4096-8af3-e1208b03d28f)\", \"debuginfo\": null} (HTTP 409)\ncommand terminated with exit code 1\n{\"faultcode\": \"Client\", \"faultstring\": \"Field flavor_id already exists (UUID: a86f6f15-730d-4dd6-9a22-7e0456a61283)\", \"debuginfo\": null} (HTTP 409)\ncommand terminated with exit code 1\nusage: openstack rating hashmap mapping create [-h]\n                                               [-f {csv,df-to-csv,json,table,value,yaml}]\n                                               [-c COLUMN]\n                                               [--format-config-file FORMAT_CONFIG]\n                                               [--quote {all,minimal,none,nonnumeric}]\n                                               [--noindent]\n                                               [--max-width <integer>]\n                                               [--fit-width] [--print-empty]\n                                               [--sort-column SORT_COLUMN]\n                                               [--sort-ascending | --sort-descending]\n                                               [-s SERVICE_ID] [-g GROUP_ID]\n                                               [--field-id FIELD_ID]\n                                               [-p TENANT_ID] [-t TYPE]\n                                               [--value VALUE]\n                                               cost\nopenstack rating hashmap mapping create: error: argument --value: expected one argument\ncommand terminated with exit code 2",
+    "stderr_lines": [
+        "{\"faultcode\": \"Client\", \"faultstring\": \"Group instance_uptime_flavor_id already exists (UUID: 9e25fd8b-49e7-402b-a521-5b605cb11ed0)\", \"debuginfo\": null} (HTTP 409)",
+        "command terminated with exit code 1",
+        "{\"faultcode\": \"Client\", \"faultstring\": \"Service instance already exists (UUID: 5dba5ebb-232e-4096-8af3-e1208b03d28f)\", \"debuginfo\": null} (HTTP 409)",
+        "command terminated with exit code 1",
+        "{\"faultcode\": \"Client\", \"faultstring\": \"Field flavor_id already exists (UUID: a86f6f15-730d-4dd6-9a22-7e0456a61283)\", \"debuginfo\": null} (HTTP 409)",
+        "command terminated with exit code 1",
+        "usage: openstack rating hashmap mapping create [-h]",
+        "                                               [-f {csv,df-to-csv,json,table,value,yaml}]",
+        "                                               [-c COLUMN]",
+        "                                               [--format-config-file FORMAT_CONFIG]",
+        "                                               [--quote {all,minimal,none,nonnumeric}]",
+        "                                               [--noindent]",
+        "                                               [--max-width <integer>]",
+        "                                               [--fit-width] [--print-empty]",
+        "                                               [--sort-column SORT_COLUMN]",
+        "                                               [--sort-ascending | --sort-descending]",
+        "                                               [-s SERVICE_ID] [-g GROUP_ID]",
+        "                                               [--field-id FIELD_ID]",
+        "                                               [-p TENANT_ID] [-t TYPE]",
+        "                                               [--value VALUE]",
+        "                                               cost",
+        "openstack rating hashmap mapping create: error: argument --value: expected one argument",
+        "command terminated with exit code 2"
+    ],
+    "stdout": "+-----------+---------+----------+\n| Module    | Enabled | Priority |\n+-----------+---------+----------+\n| hashmap   | False   |        1 |\n| noop      | True    |        1 |\n| pyscripts | False   |        1 |\n+-----------+---------+----------+",
+    "stdout_lines": [
+        "+-----------+---------+----------+",
+        "| Module    | Enabled | Priority |",
+        "+-----------+---------+----------+",
+        "| hashmap   | False   |        1 |",
+        "| noop      | True    |        1 |",
+        "| pyscripts | False   |        1 |",
+        "+-----------+---------+----------+"
+    ]
+}
+
