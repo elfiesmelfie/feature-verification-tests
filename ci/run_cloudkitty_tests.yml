@@ -12,24 +12,29 @@
     - vars/common.yml
     - vars/osp18_env.yml
   tasks:
+    - name: Set some vars
+      ansible.builtin.set_fact:
+        service_name: instance
+        group_name: instance_uptime_flavor_id
+        field_name: flavor_id
+
     - name: Check that the API is available
       ansible.builtin.shell:
         cmd: |
           {{ openstack_cmd }} rating module list
-          export SERVICE_NAME=instance
-          export GROUP_NAME=instance_uptime_flavor_id
-          export FIELD_NAME="flavor_id"
+          {{ openstack_cmd }} rating hashmap group create {{ group_name }}
+          export GROUP_ID=$( {{ openstack_cmd }} rating hashmap group list -f value -c Name -c 'Group ID' | grep {{ group_name }} | awk '{ print $2}')
 
-          {{ openstack_cmd }} rating hashmap group create $GROUP_NAME
-          export GROUP_ID=$( {{ openstack_cmd }} rating hashmap group list -f value -c Name -c 'Group ID' | grep $GROUP_NAME| awk '{ print $2}')
+          {{ openstack_cmd }} rating hashmap service create {{ service_name }}
+          export SERVICE_ID=$({{ openstack_cmd }} rating hashmap service list -f value -c Name -c 'Service ID' | grep {{ service_name }} | awk '{ print $2 }')
 
-          {{ openstack_cmd }} rating hashmap service create $SERVICE_NAME
-          export SERVICE_ID=$({{ openstack_cmd }} rating hashmap service list -f value -c Name -c 'Service ID' | grep $SERVICE_NAME | awk '{ print $2 }')
+          {{ openstack_cmd }} rating hashmap field create $SERVICE_ID {{ field_name }}
+          export FLAVOR_FIELD_ID=$({{ openstack_cmd }} rating hashmap field list $SERVICE_ID -f value -c Name -c 'Field ID' | grep {{ field_name }} | awk '{ print $2}')
 
-          {{ openstack_cmd }} rating hashmap field create $SERVICE_ID $FIELD_NAME
-          export FLAVOR_FIELD_ID=$({{ openstack_cmd }} rating hashmap field list $SERVICE_ID -f value -c Name -c 'Field ID' | grep $FIELD_NAME | awk '{ print $2}')
-
-          export FLAVOR_NAME=m1.small
+          export FLAVOR_NAME=m1.micro
           export FLAVOR_ID=$({{ openstack_cmd }} flavor list -f value -c Name -c ID | grep $FLAVOR_NAME | awk '{print $2}')
+
+          echo $GROUP_ID
+          echo $FLAVOR_ID
 
           {{ openstack_cmd }} rating hashmap mapping create 0.01  --field-id $FLAVOR_FIELD_ID  --value $FLAVOR_ID  -g $GROUP_ID  -t flat
