@@ -70,11 +70,29 @@
           ansible.builtin.shell:
             cmd: |
               {{ openstack_cmd }} rating hashmap field create {{ service_id.stdout }} {{ field_name }}
-              export FLAVOR_FIELD_ID=$({{ openstack_cmd }} rating hashmap field list {{ service_id.stdout }} -f value -c Name -c 'Field ID' | grep {{ field_name }} | awk '{ print $2}')
 
-              export FLAVOR_ID=$({{ openstack_cmd }} flavor list -f value -c Name -c ID | grep {{ flavor_name }} | awk '{print $2}')
+        - name: Get the field ID
+          ansible.builtin.shell:
+            cmd: |
+              #export FLAVOR_FIELD_ID=$({{ openstack_cmd }} rating hashmap field list {{ service_id.stdout }} -f value -c Name -c 'Field ID' | grep {{ field_name }} | awk '{ print $2}')
+              {{ openstack_cmd }} rating hashmap field list {{ service_id.stdout }} -f value -c Name -c 'Field ID' | grep {{ field_name }} | awk '{ print $2}'
+          register: flavor_field_id 
 
-              echo "group_id: " + {{ group_id.stdout }}
-              echo "flavor_id: " + $FLAVOR_ID
+        - name: Get the flavor ID
+          ansible.builtin.shell:
+            cmd: |
+              # export FLAVOR_ID=$({{ openstack_cmd }} flavor list -f value -c Name -c ID | grep {{ flavor_name }} | awk '{print $2}')
+              {{ openstack_cmd }} flavor list -f value -c Name -c ID | grep {{ flavor_name }} | awk '{print $2}'
+          register: flavor_id
 
-              {{ openstack_cmd }} rating hashmap mapping create 0.01  --field-id $FLAVOR_FIELD_ID  --value $FLAVOR_ID -g {{ group_id.stdout }} -t flat
+        - name: Show the Group and flavor ID
+          ansible.builtin.debug:
+            var: item
+          with_items:
+            - group_id
+            - flavor_id
+
+        - name: Create the mapping
+          ansible.builtin.shell:
+            cmd: |
+              {{ openstack_cmd }} rating hashmap mapping create 0.01  --field-id {{ flavor_field_id.stdout }}  --value {{ flavor_id.stdout }} -g {{ group_id.stdout }} -t flat
