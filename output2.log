@@ -1,0 +1,30 @@
+]8;id=850268;https://ansible.readthedocs.io/projects/lint/rules/ignore-errors/\[1;91mignore-errors[0m]8;;\[2m:[0m [91mUse failed_when and specify error conditions instead of using ignore_errors.[0m
+[34mci/run_cloudkitty_tests.yml[0m:22 [2mTask/Handler: Check that the API is available[0m
+
+]8;id=395565;https://ansible.readthedocs.io/projects/lint/rules/no-changed-when/\[1;91mno-changed-when[0m]8;;\[2m:[0m [91mCommands should not change things if nothing needs doing.[0m
+[34mci/run_cloudkitty_tests.yml[0m:22 [2mTask/Handler: Check that the API is available[0m
+
+]8;id=974852;https://ansible.readthedocs.io/projects/lint/rules/no-changed-when/\[1;91mno-changed-when[0m]8;;\[2m:[0m [91mCommands should not change things if nothing needs doing.[0m
+[34mci/run_cloudkitty_tests.yml[0m:29 [2mTask/Handler: Get the group ID[0m
+
+]8;id=683262;https://ansible.readthedocs.io/projects/lint/rules/ignore-errors/\[1;91mignore-errors[0m]8;;\[2m:[0m [91mUse failed_when and specify error conditions instead of using ignore_errors.[0m
+[34mci/run_cloudkitty_tests.yml[0m:36 [2mTask/Handler: Create the service[0m
+
+]8;id=900311;https://ansible.readthedocs.io/projects/lint/rules/no-changed-when/\[1;91mno-changed-when[0m]8;;\[2m:[0m [91mCommands should not change things if nothing needs doing.[0m
+[34mci/run_cloudkitty_tests.yml[0m:36 [2mTask/Handler: Create the service[0m
+
+]8;id=817828;https://ansible.readthedocs.io/projects/lint/rules/no-changed-when/\[1;91mno-changed-when[0m]8;;\[2m:[0m [91mCommands should not change things if nothing needs doing.[0m
+[34mci/run_cloudkitty_tests.yml[0m:42 [2mTask/Handler: Get the service ID[0m
+
+]8;id=988937;https://ansible.readthedocs.io/projects/lint/rules/no-changed-when/\[1;91mno-changed-when[0m]8;;\[2m:[0m [91mCommands should not change things if nothing needs doing.[0m
+[34mci/run_cloudkitty_tests.yml[0m:49 [2mTask/Handler: Create the field[0m
+
+]8;id=84380;https://ansible.readthedocs.io/projects/lint/rules/no-changed-when/\[1;91mno-changed-when[0m]8;;\[2m:[0m [91mCommands should not change things if nothing needs doing.[0m
+[34mci/run_cloudkitty_tests.yml[0m:54 [2mTask/Handler: Get the field ID[0m
+
+]8;id=116967;https://ansible.readthedocs.io/projects/lint/rules/no-changed-when/\[1;91mno-changed-when[0m]8;;\[2m:[0m [91mCommands should not change things if nothing needs doing.[0m
+[34mci/run_cloudkitty_tests.yml[0m:61 [2mTask/Handler: Get the flavor ID[0m
+
+]8;id=290346;https://ansible.readthedocs.io/projects/lint/rules/no-changed-when/\[1;91mno-changed-when[0m]8;;\[2m:[0m [91mCommands should not change things if nothing needs doing.[0m
+[34mci/run_cloudkitty_tests.yml[0m:75 [2mTask/Handler: Create the mapping[0m
+
