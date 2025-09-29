@@ -32,6 +32,8 @@
             service_name: instance
             group_name: instance_uptime_flavor_id
             field_name: flavor_id
+            #export FLAVOR_NAME=m1.micro
+            flavor_name: "m1.micro"
 
         - name: Check that the API is available
           ansible.builtin.shell:
@@ -42,18 +44,37 @@
 
               {{ openstack_cmd }} rating module list
               {{ openstack_cmd }} rating hashmap group create {{ group_name }}
-              export GROUP_ID=$( {{ openstack_cmd }} rating group list -f value -c Name -c 'Group ID' | grep {{ group_name }} | awk '{ print $2}')
+              #export GROUP_ID=$( {{ openstack_cmd }} rating group list -f value -c Name -c 'Group ID' | grep {{ group_name }} | awk '{ print $2}')
+          ignore_errors: true
 
+        - name: Get the group ID
+          ansible.builtin.shell:
+            cmd: |
+              {{ openstack_cmd }} rating group list -f value -c Name -c 'Group ID' | grep {{ group_name }} | awk '{ print $2}'
+          register: group_id
+
+        - name: Create the service
+          ansible.builtin.shell:
+            cmd: |
               {{ openstack_cmd }} rating  hashmap service create {{ service_name }}
-              export SERVICE_ID=$({{ openstack_cmd }} rating hashmap service list -f value -c Name -c 'Service ID' | grep {{ service_name }} | awk '{ print $2 }')
+          ignore_errors: true
 
-              {{ openstack_cmd }} rating hashmap field create $SERVICE_ID {{ field_name }}
-              export FLAVOR_FIELD_ID=$({{ openstack_cmd }} rating hashmap field list $SERVICE_ID -f value -c Name -c 'Field ID' | grep {{ field_name }} | awk '{ print $2}')
+        - name: Get the service ID
+          ansible.builtin.shell:
+            cmd: |
+              # export SERVICE_ID=$({{ openstack_cmd }} rating hashmap service list -f value -c Name -c 'Service ID' | grep {{ service_name }} | awk '{ print $2 }')
+              {{ openstack_cmd }} rating hashmap service list -f value -c Name -c 'Service ID' | grep {{ service_name }} | awk '{ print $2 }'
+          register: service_id
 
-              export FLAVOR_NAME=m1.micro
-              export FLAVOR_ID=$({{ openstack_cmd }} flavor list -f value -c Name -c ID | grep $FLAVOR_NAME | awk '{print $2}')
+        - name: Create the field
+          ansible.builtin.shell:
+            cmd: |
+              {{ openstack_cmd }} rating hashmap field create {{ service_id.stdout }} {{ field_name }}
+              export FLAVOR_FIELD_ID=$({{ openstack_cmd }} rating hashmap field list {{ service_id.stdout }} -f value -c Name -c 'Field ID' | grep {{ field_name }} | awk '{ print $2}')
 
-              echo $GROUP_ID
-              echo $FLAVOR_ID
+              export FLAVOR_ID=$({{ openstack_cmd }} flavor list -f value -c Name -c ID | grep {{ flavor_name }} | awk '{print $2}')
 
-              {{ openstack_cmd }} rating hashmap mapping create 0.01  --field-id $FLAVOR_FIELD_ID  --value $FLAVOR_ID  -g $GROUP_ID  -t flat
+              echo "group_id: " + {{ group_id.stdout }}
+              echo "flavor_id: " + $FLAVOR_ID
+
+              {{ openstack_cmd }} rating hashmap mapping create 0.01  --field-id $FLAVOR_FIELD_ID  --value $FLAVOR_ID -g {{ group_id.stdout }} -t flat
