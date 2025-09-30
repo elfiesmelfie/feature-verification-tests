@@ -55,7 +55,7 @@
         - name: Get the group ID
           ansible.builtin.shell:
             cmd: |
-              {{ openstack_cmd }} rating group list -f value -c Name -c 'Group ID' | grep {{ group_name }} | awk '{ print $2}'
+              {{ openstack_cmd }} rating hashmap group list -f value -c Name -c 'Group ID' | grep {{ group_name }} | awk '{ print $2}'
           register: group_id
 
         - name: Create the service
