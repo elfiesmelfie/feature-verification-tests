@@ -76,6 +76,7 @@
           ansible.builtin.shell:
             cmd: |
               {{ openstack_cmd }} rating hashmap field create {{ service_id.stdout }} {{ field_name }}
+          ignore_errors: true
 
         - name: Get the field ID
           ansible.builtin.shell:
