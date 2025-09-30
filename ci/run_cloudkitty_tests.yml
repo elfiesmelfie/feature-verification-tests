@@ -33,7 +33,12 @@
             group_name: instance_uptime_flavor_id
             field_name: flavor_id
             #export FLAVOR_NAME=m1.micro
-            flavor_name: "m1.micro"
+            flavor_name: "test_flavor"
+
+        - name: Create the expected flavor
+          ansible.builtin.shell:
+            cmd: |
+              {{ openstack_cmd }} flavor create --ram 128 --disk 20 --vcpus 1 {{ flavor_name }}
 
         - name: Check that the API is available
           ansible.builtin.shell:
@@ -65,6 +70,7 @@
               # export SERVICE_ID=$({{ openstack_cmd }} rating hashmap service list -f value -c Name -c 'Service ID' | grep {{ service_name }} | awk '{ print $2 }')
               {{ openstack_cmd }} rating hashmap service list -f value -c Name -c 'Service ID' | grep {{ service_name }} | awk '{ print $2 }'
           register: service_id
+          failed_when: service_id.stdout_lines | length > 1
 
         - name: Create the field
           ansible.builtin.shell:
@@ -95,4 +101,10 @@
         - name: Create the mapping
           ansible.builtin.shell:
             cmd: |
-              {{ openstack_cmd }} rating hashmap mapping create 0.01  --field-id {{ flavor_field_id.stdout }}  --value {{ flavor_id.stdout }} -g {{ group_id.stdout }} -t flat
+              {{ openstack_cmd }} rating hashmap mapping create 0.01 --field-id {{ flavor_field_id.stdout }}  --value {{ flavor_id.stdout }} -g {{ group_id.stdout }} -t flat
+
+      always:
+        - name: Delete the flavor
+          ansible.builtin.shell:
+            cmd: |
+              {{ openstack_cmd }} flavor delete test_flavor
