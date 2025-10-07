@@ -22,7 +22,7 @@
           ansible.builtin.shell:
             cmd: |
               oc exec -n openstack openstackclient -- python3 -m ensurepip --upgrade
-              oc exec -n openstack openstackclient -- python3 -m pip install --upgrade git+https://github.com/openstack/python-cloudkittyclient@stable/2025.2
+              oc exec -n openstack openstackclient -- python3 -m pip install --upgrade git+https://github.com/openstack/python-cloudkittyclient@stable/2025.1
 
         # There should be a metric storage endpoint available
         # Lokistack should exist
