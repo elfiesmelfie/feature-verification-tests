@@ -38,11 +38,13 @@
               #export GROUP_ID=$( {{ openstack_cmd }} rating hashmap group list -f value -c Name -c 'Group ID' | grep {{ group_name }} | awk '{ print $2}')
               {{ openstack_cmd }} rating hashmap group list -f value -c Name -c 'Group ID' | grep {{ group_name }} | awk '{ print $2}'
           register: group_id
+          changed_when: false
 
         - name: Create the service
           ansible.builtin.shell:
             cmd: |
               {{ openstack_cmd }} rating hashmap service create {{ service_name }}
+          failed_when: output.rc != 0 and "Service instance already exists" not in output.stderr
           ignore_errors: true
 
         - name: Get the service ID
@@ -52,12 +54,17 @@
               {{ openstack_cmd }} rating hashmap service list -f value -c Name -c 'Service ID' | grep {{ service_name }} | awk '{ print $2 }'
           register: service_id
           failed_when: service_id.stdout_lines | length > 1
+          failed_when: false
 
+          # changed_when/failed_when is customisable.
+          # they can be set based on variables and expressions
         - name: Create the field
           ansible.builtin.shell:
             cmd: |
               {{ openstack_cmd }} rating hashmap field create {{ service_id.stdout }} {{ field_name }}
           ignore_errors: true
+          register: output
+          changed_when: output.rc == 0
 
         - name: Get the field ID
           ansible.builtin.shell:
@@ -65,6 +72,7 @@
               #export FLAVOR_FIELD_ID=$({{ openstack_cmd }} rating hashmap field list {{ service_id.stdout }} -f value -c Name -c 'Field ID' | grep {{ field_name }} | awk '{ print $2}')
               {{ openstack_cmd }} rating hashmap field list {{ service_id.stdout }} -f value -c Name -c 'Field ID' | grep {{ field_name }} | awk '{ print $2}'
           register: flavor_field_id
+          changed_when: false
 
         - name: Get the flavor ID
           ansible.builtin.shell:
@@ -72,6 +80,7 @@
               # export FLAVOR_ID=$({{ openstack_cmd }} flavor list -f value -c Name -c ID | grep {{ flavor_name }} | awk '{print $2}')
               {{ openstack_cmd }} flavor list -f value -c Name -c ID | grep {{ flavor_name }} | awk '{print $2}'
           register: flavor_id
+          changed_when: false
 
         - name: Show the Group and flavor ID
           ansible.builtin.debug:
@@ -84,9 +93,13 @@
           ansible.builtin.shell:
             cmd: |
               {{ openstack_cmd }} rating hashmap mapping create 0.01  --field-id {{ flavor_field_id.stdout }}  --value {{ flavor_id.stdout }} -g {{ group_id.stdout }} -t flat
+          register: output
+          changed_when: output.rc == 0
 
       always:
         - name: Delete the flavor
           ansible.builtin.shell:
             cmd: |
               {{ openstack_cmd }} flavor delete test_flavor
+          register: output
+          changed_when: output.rc == 0
