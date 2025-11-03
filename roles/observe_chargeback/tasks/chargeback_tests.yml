@@ -1,0 +1,19 @@
+---
+- name: Verify OpenStack Rating Module are correctly enabled, disabled
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Verify that exactly 2 rating modules are enabled
+      become: true
+      ansible.builtin.shell:
+        cmd: "[[ $(openstack rating module list | grep True | wc -l) -eq 2 ]]"
+      changed_when: false
+
+    - name: Verify that exactly 1 'pyscripts' module is disabled
+      become: true
+      ansible.builtin.shell:
+        cmd: "[[ $(openstack rating module list | grep pyscripts | grep False | wc -l) -eq 1 ]]"
+      changed_when: false
+
