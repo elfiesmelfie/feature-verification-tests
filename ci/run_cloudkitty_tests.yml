@@ -44,6 +44,7 @@
           ansible.builtin.shell:
             cmd: |
               {{ openstack_cmd }} rating hashmap service create {{ service_name }}
+          register: output
           failed_when: output.rc != 0 and "Service instance already exists" not in output.stderr
           ignore_errors: true
 
