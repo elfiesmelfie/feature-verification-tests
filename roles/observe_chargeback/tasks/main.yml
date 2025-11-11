@@ -1,4 +1,3 @@
 ---
-- name: "Verify chargeback tests"
-  when: chargeback_user_list is defined
+- name: "Validate ChargeBack Feature"
   ansible.builtin.include_tasks: "chargeback_tests.yml"

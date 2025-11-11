@@ -1,19 +1,35 @@
 ---
-- name: Verify OpenStack Rating Module are correctly enabled, disabled
-  hosts: localhost
-  connection: local
-  gather_facts: false
+- name: Get status of all CloudKitty rating modules
+  ansible.builtin.command:
+    cmd: "openstack rating module list"
+  changed_when: false
+  register: module_list
 
-  tasks:
-    - name: Verify that exactly 2 rating modules are enabled
-      become: true
-      ansible.builtin.shell:
-        cmd: "[[ $(openstack rating module list | grep True | wc -l) -eq 2 ]]"
-      changed_when: false
+- name: TEST Validate CloudKitty module states
+  ansible.builtin.assert:
+    that:
+      - "'noop' in module_list.stdout and 'True' in (module_list.stdout_lines | select('search', 'noop') | first)"
+      - "'hashmap' in module_list.stdout and 'True' in (module_list.stdout_lines | select('search', 'hashmap') | first)"
+      - "'pyscripts' in module_list.stdout and 'False' in (module_list.stdout_lines | select('search', 'pyscripts') | first)"
+    fail_msg: "CloudKitty module validation FAILED. Module states are not as expected."
+    success_msg: "SUCCESS: CloudKitty modules (noop=True, hashmap=True, pyscripts=False) are configured correctly."
 
-    - name: Verify that exactly 1 'pyscripts' module is disabled
-      become: true
-      ansible.builtin.shell:
-        cmd: "[[ $(openstack rating module list | grep pyscripts | grep False | wc -l) -eq 1 ]]"
-      changed_when: false
+- name: Find the current value of hashmap
+  ansible.builtin.shell:
+    cmd: | 
+        "openstack rating module get hashmap -c  Priority  -f csv | tail -n +2"
+  register: start_hashmap_priority
+  changed_when: start_hashmap_priority.stdout | trim != '100'
 
+- name: TEST Set priority for CloudKitty hashmap module
+  ansible.builtin.command:
+    cmd: "openstack rating module set priority hashmap 100"
+  register: set_hashmap_priority
+  when: start_hashmap_priority.stdout | trim != '100'
+  failed_when: set_hashmap_priority.rc >= 1 or set_hashmap_priority.stdout == ""
+  changed_when: set_hashmap_priority.rc == 0
+
+- name: Print result of hashmap priority value change
+  ansible.builtin.debug:
+    msg: "The hashmap priority is set to 100"
+  when: (start_hashmap_priority.stdout | trim == '100') or (set_hashmap_priority.rc is defined and set_hashmap_priority.rc == 0)
