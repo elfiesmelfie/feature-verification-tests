@@ -98,6 +98,19 @@
 
       always:
         # need to delete the service, field, mapping, etc
+        - name: Delete the service
+          ansible.builtin.command:
+            cmd: |
+              {{ openstack_cmd }} rating hashmap service delete {{ service_id.stdout }}
+          ignore_errors: true
+
+        # need to delete the service, field, mapping, etc
+        - name: Delete the group
+          ansible.builtin.command:
+            cmd: |
+              {{ openstack_cmd }} rating hashmap group delete {{ group_id.stdout }}
+          ignore_errors: true
+
         - name: Delete the flavor
           ansible.builtin.shell:
             cmd: |
