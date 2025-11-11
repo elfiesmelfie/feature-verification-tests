@@ -25,7 +25,7 @@
           {{ openstack_cmd }} flavor create --ram 128 --disk 20 --vcpus 1 {{ flavor_name }}
 
     - block:
-        - name: Check that the API is available
+        - name: TEST Check that the API is available
           ansible.builtin.shell:
             cmd: |
               {{ openstack_cmd }} rating module list
@@ -40,7 +40,7 @@
           register: group_id
           changed_when: false
 
-        - name: Create the service
+        - name: TEST Create the service
           ansible.builtin.shell:
             cmd: |
               {{ openstack_cmd }} rating hashmap service create {{ service_name }}
@@ -58,7 +58,7 @@
 
           # changed_when/failed_when is customisable.
           # they can be set based on variables and expressions
-        - name: Create the field
+        - name: TEST Create the field
           ansible.builtin.shell:
             cmd: |
               {{ openstack_cmd }} rating hashmap field create {{ service_id.stdout }} {{ field_name }}
@@ -97,6 +97,7 @@
           changed_when: output.rc == 0
 
       always:
+        # need to delete the service, field, mapping, etc
         - name: Delete the flavor
           ansible.builtin.shell:
             cmd: |
