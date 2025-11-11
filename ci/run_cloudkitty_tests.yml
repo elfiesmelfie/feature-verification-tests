@@ -54,7 +54,6 @@
               {{ openstack_cmd }} rating hashmap service list -f value -c Name -c 'Service ID' | grep {{ service_name }} | awk '{ print $2 }'
           register: service_id
           failed_when: service_id.stdout_lines | length > 1
-          failed_when: false
 
           # changed_when/failed_when is customisable.
           # they can be set based on variables and expressions
