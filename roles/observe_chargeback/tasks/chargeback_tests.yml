@@ -1,7 +1,7 @@
 ---
 - name: Get status of all CloudKitty rating modules
   ansible.builtin.command:
-    cmd: "openstack rating module list"
+    cmd: "{{ openstack_cmd }} rating module list"
   changed_when: false
   register: module_list
 
@@ -16,14 +16,13 @@
 
 - name: Find the current value of hashmap
   ansible.builtin.shell:
-    cmd: | 
-        "openstack rating module get hashmap -c  Priority  -f csv | tail -n +2"
+    cmd: "{{ openstack_cmd }} rating module get hashmap -c  Priority  -f csv | tail -n +2"
   register: start_hashmap_priority
   changed_when: start_hashmap_priority.stdout | trim != '100'
 
 - name: TEST Set priority for CloudKitty hashmap module
   ansible.builtin.command:
-    cmd: "openstack rating module set priority hashmap 100"
+    cmd: "{{ openstack_cmd }} rating module set priority hashmap 100"
   register: set_hashmap_priority
   when: start_hashmap_priority.stdout | trim != '100'
   failed_when: set_hashmap_priority.rc >= 1 or set_hashmap_priority.stdout == ""
