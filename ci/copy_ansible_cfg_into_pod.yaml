@@ -1,0 +1,12 @@
+---
+- hosts: localhost
+  tasks:
+    - name: Shoe playbook dir
+      ansible.builtin.debug:
+        msg: |
+          playbook dir = "{{ playbook_dir }}"
+
+    - name: copy ci/ansible.cfg into expected location
+      ansible.builtin.shell:
+        cmd: |
+          cp {{ playbook_dir }}/ansible.cfg {{ ansible_env.ANSIBLE_DIR }}/ansible.cfg
