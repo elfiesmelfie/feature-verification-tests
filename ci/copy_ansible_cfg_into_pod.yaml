@@ -6,7 +6,8 @@
         msg: |
           playbook dir = "{{ playbook_dir }}"
 
+          # lookup is used here because we need the value on the controller (i.e. the ansibletestpod)
     - name: copy ci/ansible.cfg into expected location
       ansible.builtin.shell:
         cmd: |
-          cp {{ playbook_dir }}/ansible.cfg {{ ansible_env.ANSIBLE_DIR }}/ansible.cfg
+          cp {{ playbook_dir }}/ansible.cfg {{ lookup('ansible.builtin.env', 'ANSIBLE_DIR', default="/var/lib/ansible/ansible") }}/ansible.cfg
