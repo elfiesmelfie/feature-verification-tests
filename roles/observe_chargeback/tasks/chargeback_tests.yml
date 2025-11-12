@@ -1,0 +1,35 @@
+---
+- name: Get status of all CloudKitty rating modules
+  ansible.builtin.command:
+    cmd: "openstack rating module list"
+  changed_when: false
+  register: module_list
+
+- name: TEST Validate CloudKitty module states
+  ansible.builtin.assert:
+    that:
+      - "'noop' in module_list.stdout and 'True' in (module_list.stdout_lines | select('search', 'noop') | first)"
+      - "'hashmap' in module_list.stdout and 'True' in (module_list.stdout_lines | select('search', 'hashmap') | first)"
+      - "'pyscripts' in module_list.stdout and 'False' in (module_list.stdout_lines | select('search', 'pyscripts') | first)"
+    fail_msg: "CloudKitty module validation FAILED. Module states are not as expected."
+    success_msg: "SUCCESS: CloudKitty modules (noop=True, hashmap=True, pyscripts=False) are configured correctly."
+
+- name: Find the current value of hashmap
+  ansible.builtin.shell:
+    cmd: | 
+        "openstack rating module get hashmap -c  Priority  -f csv | tail -n +2"
+  register: start_hashmap_priority
+  changed_when: start_hashmap_priority.stdout | trim != '100'
+
+- name: TEST Set priority for CloudKitty hashmap module
+  ansible.builtin.command:
+    cmd: "openstack rating module set priority hashmap 100"
+  register: set_hashmap_priority
+  when: start_hashmap_priority.stdout | trim != '100'
+  failed_when: set_hashmap_priority.rc >= 1 or set_hashmap_priority.stdout == ""
+  changed_when: set_hashmap_priority.rc == 0
+
+- name: Print result of hashmap priority value change
+  ansible.builtin.debug:
+    msg: "The hashmap priority is set to 100"
+  when: (start_hashmap_priority.stdout | trim == '100') or (set_hashmap_priority.rc is defined and set_hashmap_priority.rc == 0)
