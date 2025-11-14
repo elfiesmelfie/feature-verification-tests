@@ -1,4 +1,7 @@
 ---
+- name: Run pre-test steps
+  ansible.builtin.import_playbook: pre-test-steps.yml
+
 - name: "Verify logging projects, endpoints, credentials, nodes, pods, services, manifests and subscriptions"
   hosts: controller
   gather_facts: no
