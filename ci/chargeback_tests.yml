@@ -220,3 +220,7 @@
     - name: "Run Services and CRD tests"
       ansible.builtin.import_role:
         name: common
+    - name: "Run the chargeback role"
+      ansible.builtin.import_role:
+        name: observe_chargeback
+
