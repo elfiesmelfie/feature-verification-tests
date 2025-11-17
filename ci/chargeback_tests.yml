@@ -25,7 +25,6 @@
     common_service_test_id: ""
     common_service_nspace: openstack
     common_service_list:
-      - cluster-logging-operator-metrics
       - cloudkitty-lokistack-compactor-grpc
       - cloudkitty-lokistack-compactor-http
       - cloudkitty-lokistack-distributor-grpc
