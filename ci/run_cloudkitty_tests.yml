@@ -23,6 +23,14 @@
       ansible.builtin.shell:
         cmd: |
           {{ openstack_cmd }} flavor create --ram 128 --disk 20 --vcpus 1 {{ flavor_name }}
+      register: output
+      changed_when:
+          # the flavor already exists, so nothing has been changed
+        - not "Flavor with name {{ flavor_name }} already exists" in output.stderr
+      failed_when:
+        - output.rc != 0
+          # It's okay for this to be in the error, since that flavor already exists.
+        - not "Flavor with name {{ flavor_name }} already exists" in output.stderr
 
     - block:
         - name: TEST Check that the API is available
