@@ -2,7 +2,7 @@
 - name: Run pre-test steps
   ansible.builtin.import_playbook: pre-test-steps.yml
 
-- name: "Verify logging projects, endpoints, credentials, nodes, pods, services, manifests and subscriptions"
+- name: "Verify all the applicable projects, endpoints, pods & services for cloudkitty"
   hosts: controller
   gather_facts: no
   ignore_errors: true
@@ -12,10 +12,23 @@
   vars_files:
     - vars/osp18_env.yml
   vars:
-    common_subscription_test_id: ""
-    common_subscription_nspace: openshift-operators-redhat
-    common_subscription_list:
-      - loki-operator
+    common_pod_test_id: ""
+    common_pod_status_str: "Running"
+    common_pod_nspace: openstack
+    common_pod_list:
+      - cloudkitty-api
+      - cloudkitty-lokistack-compactor
+      - cloudkitty-lokistack-distributor
+      - cloudkitty-lokistack-gateway
+      - cloudkitty-lokistack-index-gateway
+      - cloudkitty-lokistack-ingester
+      - cloudkitty-lokistack-querier
+      - cloudkitty-lokistack-query-frontend
+
+    common_project_test_id: ""
+    common_project_list:
+      - openstack
+      - openstack-operators
 
     common_endpoint_test_id: ""
     common_endpoint_list:
@@ -25,6 +38,7 @@
     common_service_test_id: ""
     common_service_nspace: openstack
     common_service_list:
+      - cloudkitty-internal
       - cloudkitty-lokistack-compactor-grpc
       - cloudkitty-lokistack-compactor-http
       - cloudkitty-lokistack-distributor-grpc
@@ -39,74 +53,9 @@
       - cloudkitty-lokistack-querier-http
       - cloudkitty-lokistack-query-frontend-grpc
       - cloudkitty-lokistack-query-frontend-http
+      - cloudkitty-public
 
   tasks:
-    - name: "Verify logging infrastructure components"
+    - name: "Verify cloudkitty infrastructure components"
       ansible.builtin.import_role:
         name: common
-
-
-- name: "Verify logging pods are running in openstack"
-  hosts: controller
-  gather_facts: no
-  ignore_errors: true
-  environment:
-    KUBECONFIG: "{{ cifmw_openshift_kubeconfig }}"
-    PATH: "{{ cifmw_path }}"
-  vars:
-    common_pod_test_id: ""
-    common_pod_status_str: "Running"
-    common_pod_nspace: openstack
-    common_pod_list:
-      - openstackclient
-  tasks:
-    - name: "Verify Running Pods"
-      ansible.builtin.import_role:
-        name: common
-
-
-- name: "Verify logging pods are running in openshift-operators-redhat"
-  hosts: controller
-  gather_facts: no
-  ignore_errors: true
-  environment:
-    KUBECONFIG: "{{ cifmw_openshift_kubeconfig }}"
-    PATH: "{{ cifmw_path }}"
-  vars:
-    common_pod_test_id: ""
-    common_pod_status_str: "Running"
-    common_pod_nspace: openshift-operators-redhat
-    common_pod_list:
-      - loki-operator-controller-manager
-  tasks:
-    - name: "Verify Pods running"
-      ansible.builtin.import_role:
-        name: common
-
-- name: "Verify minio is runing in minio-dev"
-  hosts: controller
-  gather_facts: no
-  ignore_errors: true
-  environment:
-    KUBECONFIG: "{{ cifmw_openshift_kubeconfig }}"
-    PATH: "{{ cifmw_path }}"
-  vars:
-    common_pod_test_id: ""
-    common_pod_status_str: "Running"
-    common_pod_nspace: minio-dev
-    common_pod_list:
-      - minio
-    common_crd_test_id: ""
-    common_crd_list:
-      - alertingrules.loki.grafana.com
-      - lokistacks.loki.grafana.com
-      - recordingrules.loki.grafana.com
-      - rulerconfigs.loki.grafana.com
-  tasks:
-    - name: "Run Services and CRD tests"
-      ansible.builtin.import_role:
-        name: common
-    - name: "Run the chargeback role"
-      ansible.builtin.import_role:
-        name: observe_chargeback
-
